@@ -1,0 +1,6 @@
+.idea/
+yarn.lock
+target/*
+*.iml
+.DS_Store
+/catalina.*
