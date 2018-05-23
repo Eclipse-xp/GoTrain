@@ -11,6 +11,9 @@ import (
 	"errors"
 	"os"
 	"bufio"
+	"strings"
+	_ "github.com/Go-SQL-Driver/MySQL"
+	"database/sql"
 )
 
 var xp Person
@@ -39,6 +42,26 @@ func main() {
 
 	xp.readBook()
 
+	xiaolongxia := xp.cook()
+	wife := theCouple["wife"]
+	err := wife.Eat(&xiaolongxia, "辣")
+	if err!=nil {
+		fmt.Println("拒绝吃饭！", err)
+	}
+
+	if err := recover();err != nil {
+		fmt.Println(err)
+	}
+	xp.fallInLoveWith(&wife)
+
+	operateDB()
+
+	//c := make(chan int, 2)
+	//c <- 1
+	//c <- 2
+	//fmt.Println(<-c)
+	//fmt.Println(<-c)
+
 }
 //____________本应放在其他文件的内容，由于编译问题暂放这里________________
 
@@ -63,6 +86,8 @@ func timeHandler(format string) http.Handler {
 type Person struct {
 	//姓名
 	name string
+	//性别
+	sex string
 	//年龄
 	age int
 	//所在地
@@ -81,7 +106,7 @@ func (p *Person) Learn(learnContent string){
 func (p *Person) Eat(food *food.Food, avoid string) error {
 	//处理 味道忌口
 	for _,taste := range food.Taste  {
-		if taste == avoid {
+		if strings.Contains(taste, avoid) {
 			return errors.New("忌口："+avoid)
 		}
 	}
@@ -113,6 +138,22 @@ func (p *Person)readBook(){
 	}
 
 }
+//做饭
+func (p *Person)cook() food.Food{
+
+	return food.Food{
+		Name:"小龙虾",
+		Taste:[]string{"麻辣"},
+	}
+}
+//恋爱
+func (p *Person)fallInLoveWith(who *Person){
+	if p.sex == who.sex {
+		panic("对不起，我"+p.name+"是直的！", )
+	}
+	fmt.Println(p.name, " love ", who.name)
+}
+
 //____________________________
 
 
@@ -134,18 +175,21 @@ func testUpdateVar(){
 func init_local(){
 	xp = Person{
 		name:"xiexiangpeng",
+		sex:"男",
 		age:18,
 		local:"吉林啊",
 	}
 	wy := Person{
 		name:"wangwenya",
+		sex:"女",
 		age:14,
 		local:"廊坊",
 	}
 
 	persons = []Person{xp, wy}
-
+	//theCouple = make(map[string]Person)
 	theCouple = map[string]Person{"husband":xp,"wife":wy}
+
 }
 func introduceCP(cp map[string]Person){
 	for role, w := range cp  {
@@ -163,4 +207,41 @@ func introduceAll(persons []Person){
 //获得一个人的简介
 func getIntroduce(person Person) string{
 	return "this is " + person.name +","+strconv.Itoa(person.age) +" years old. come from " + person.local
+}
+
+//数据库操作
+func operateDB(){
+	//db 类型为sql.DB
+	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/mytest?charset=utf8")
+	if err!=nil {
+		fmt.Println(err)
+	}
+	//preStmt, _ := db.Prepare("insert into test_tab(name,city) values (?,?)")
+	//preStmt.Exec("tr", "beijing")
+	//db.Exec("insert into test_tab(name,city) values (?,?)","tr", "beijing")
+
+	transaction,_ := db.Begin()
+	stmt,_ := transaction.Prepare("insert into test_tab(name,city) values (?,?)")
+	//id,_ := stmt.Exec("tr", "beijing")
+	stmt.Exec("yf", "衡水")
+	transaction.Commit()
+
+	fmt.Println("--------批量查询--------")
+	rows,_ := db.Query("select * from test_tab")
+	for rows.Next()  {
+		var id int
+		var name,city string
+		if err := rows.Scan(&id, &name, &city);err==nil{
+			fmt.Println("id:",id," name:",name, " city:",city)
+		}
+	}
+
+	fmt.Println("--------单个查询--------")
+	var id int
+	var name,city string
+	db.QueryRow("select * from test_tab where id = 4").Scan(&id,&name,&city)
+	fmt.Println("id:",id," name:",name, " city:",city)
+	db.Close()
+
+
 }
