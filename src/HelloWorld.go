@@ -3,7 +3,6 @@ package main
 import (
 	"strconv"
 	"fmt"
-	"human"
 	"net/http"
 	"time"
 	"log"
@@ -14,6 +13,8 @@ import (
 	"strings"
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"database/sql"
+	_ "github.com/jinzhu/gorm"
+	"github.com/jinzhu/gorm"
 )
 
 var xp Person
@@ -22,45 +23,47 @@ var theCouple map[string]Person
 var language ="java"
 
 func main() {
-	init_local()
-
-	introduceAll(persons)
-	introduceCP(theCouple)
-	testUpdateVar()
-
-	xp.autoIntroduce()
-
-	xp.travel("北京")
-	fmt.Println(getIntroduce(xp))
-
-	var man human.Ability = &xp
-	man.Learn("java")
-
-	xp.autoIntroduce()
-
-	//xp.showBlog()
-
-	xp.readBook()
-
-	xiaolongxia := xp.cook()
-	wife := theCouple["wife"]
-	err := wife.Eat(&xiaolongxia, "辣")
-	if err!=nil {
-		fmt.Println("拒绝吃饭！", err)
-	}
-
-	if err := recover();err != nil {
-		fmt.Println(err)
-	}
-	xp.fallInLoveWith(&wife)
-
-	operateDB()
+	//init_local()
+	//
+	//introduceAll(persons)
+	//introduceCP(theCouple)
+	//testUpdateVar()
+	//
+	//xp.autoIntroduce()
+	//
+	//xp.travel("北京")
+	//fmt.Println(getIntroduce(xp))
+	//
+	//var man human.Ability = &xp
+	//man.Learn("java")
+	//
+	//xp.autoIntroduce()
+	//
+	////xp.showBlog()
+	//
+	//xp.readBook()
+	//
+	//xiaolongxia := xp.cook()
+	//wife := theCouple["wife"]
+	//err := wife.Eat(&xiaolongxia, "辣")
+	//if err!=nil {
+	//	fmt.Println("拒绝吃饭！", err)
+	//}
+	//
+	//if err := recover();err != nil {
+	//	fmt.Println(err)
+	//}
+	//xp.fallInLoveWith(&wife)
+	//
+	//operateDB()
 
 	//c := make(chan int, 2)
 	//c <- 1
 	//c <- 2
 	//fmt.Println(<-c)
 	//fmt.Println(<-c)
+
+	operateGORM()
 
 }
 //____________本应放在其他文件的内容，由于编译问题暂放这里________________
@@ -244,4 +247,37 @@ func operateDB(){
 	db.Close()
 
 
+}
+
+type knowledge struct {
+	Id int
+	Language string
+	Skill string
+	Level string
+	Contents string
+}
+
+func operateGORM(){
+	db, err := gorm.Open("mysql", "root:root@tcp(localhost:3306)/mytest?charset=utf8")
+	if err != nil {
+		panic("failed to connect database")
+	}
+	defer db.Close()
+
+	// Migrate the schema
+	db.AutoMigrate(&knowledge{})
+
+	// Create
+	db.Create(&knowledge{Language: "go", Skill: "orm", Level: "begin"})
+
+	// Read
+	var product knowledge
+	db.First(&product, 1) // find product with id 1
+	db.First(&product, "Language = ?", "go") // find product with code l1212
+
+	// Update - update product's price to 2000
+	db.Model(&product).Update("begin", "init")
+
+	// Delete - delete product
+	//db.Delete(&product)
 }
