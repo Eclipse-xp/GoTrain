@@ -20,7 +20,7 @@ import (
 var xp Person
 var persons []Person
 var theCouple map[string]Person
-var language ="java"
+var language = "java"
 
 func main() {
 	//init_local()
@@ -64,12 +64,13 @@ func main() {
 	//fmt.Println(<-c)
 
 	operateGORM()
-
+	//operateDB()
 }
+
 //____________本应放在其他文件的内容，由于编译问题暂放这里________________
 
 //开放博客
-func (p *Person)showBlog(){
+func (p *Person) showBlog() {
 	mux := http.NewServeMux()
 	rh := http.RedirectHandler("http://744722813.iteye.com/", 307)
 	mux.Handle("/blog", rh)
@@ -82,10 +83,11 @@ func (p *Person)showBlog(){
 func timeHandler(format string) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		tm := time.Now().Format(format)
-		w.Write([]byte("Hey ****"+ r.FormValue("name") +"**** The time is: " + tm))
+		w.Write([]byte("Hey ****" + r.FormValue("name") + "**** The time is: " + tm))
 	}
 	return http.HandlerFunc(fn)
 }
+
 type Person struct {
 	//姓名
 	name string
@@ -102,65 +104,70 @@ type Person struct {
 }
 
 //学习
-func (p *Person) Learn(learnContent string){
+func (p *Person) Learn(learnContent string) {
 	p.skill = append(p.skill, learnContent)
 }
+
 //吃饭
 func (p *Person) Eat(food *food.Food, avoid string) error {
 	//处理 味道忌口
-	for _,taste := range food.Taste  {
+	for _, taste := range food.Taste {
 		if strings.Contains(taste, avoid) {
-			return errors.New("忌口："+avoid)
+			return errors.New("忌口：" + avoid)
 		}
 	}
 	p.weight += 1
 	return nil
 }
+
 //自我介绍
-func (p *Person)autoIntroduce(){
-	fmt.Println("Hey guys, my name is "+p.name)
-	fmt.Println("I do well in ",p.skill)
+func (p *Person) autoIntroduce() {
+	fmt.Println("Hey guys, my name is " + p.name)
+	fmt.Println("I do well in ", p.skill)
 }
+
 //旅行
-func (p *Person)travel(city string){
+func (p *Person) travel(city string) {
 	p.local = city
 }
+
 //读书
-func (p *Person)readBook(){
+func (p *Person) readBook() {
 	path := "E:\\test\\背影.txt"
 	log.Print(path)
 	file, err := os.Open(path)
 
-	if err==nil {
+	if err == nil {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			fmt.Println(scanner.Text())
 		}
 	} else {
-		fmt.Println("file error:",err)
+		fmt.Println("file error:", err)
 	}
 
 }
+
 //做饭
-func (p *Person)cook() food.Food{
+func (p *Person) cook() food.Food {
 
 	return food.Food{
-		Name:"小龙虾",
-		Taste:[]string{"麻辣"},
+		Name:  "小龙虾",
+		Taste: []string{"麻辣"},
 	}
 }
+
 //恋爱
-func (p *Person)fallInLoveWith(who *Person){
+func (p *Person) fallInLoveWith(who *Person) {
 	if p.sex == who.sex {
-		panic("对不起，我"+p.name+"是直的！", )
+		panic("对不起，我" + p.name + "是直的！", )
 	}
 	fmt.Println(p.name, " love ", who.name)
 }
 
 //____________________________
 
-
-func testUpdateVar(){
+func testUpdateVar() {
 	//直接赋值
 	person2 := xp
 	person2.local = "吉林"
@@ -175,109 +182,141 @@ func testUpdateVar(){
 }
 
 //初始化变量
-func init_local(){
+func init_local() {
 	xp = Person{
-		name:"xiexiangpeng",
-		sex:"男",
-		age:18,
-		local:"吉林啊",
+		name:  "xiexiangpeng",
+		sex:   "男",
+		age:   18,
+		local: "吉林啊",
 	}
 	wy := Person{
-		name:"wangwenya",
-		sex:"女",
-		age:14,
-		local:"廊坊",
+		name:  "wangwenya",
+		sex:   "女",
+		age:   14,
+		local: "廊坊",
 	}
 
 	persons = []Person{xp, wy}
 	//theCouple = make(map[string]Person)
-	theCouple = map[string]Person{"husband":xp,"wife":wy}
+	theCouple = map[string]Person{"husband": xp, "wife": wy}
 
 }
-func introduceCP(cp map[string]Person){
-	for role, w := range cp  {
-		fmt.Println(role+ ":" + getIntroduce(w))
+func introduceCP(cp map[string]Person) {
+	for role, w := range cp {
+		fmt.Println(role + ":" + getIntroduce(w))
 	}
 }
 
 //介绍全员
-func introduceAll(persons []Person){
-	for _, man := range persons  {
-		fmt.Println("this is " + man.name +","+strconv.Itoa(man.age) +" years old. come from " + man.local)
+func introduceAll(persons []Person) {
+	for _, man := range persons {
+		fmt.Println("this is " + man.name + "," + strconv.Itoa(man.age) + " years old. come from " + man.local)
 	}
 }
 
 //获得一个人的简介
-func getIntroduce(person Person) string{
-	return "this is " + person.name +","+strconv.Itoa(person.age) +" years old. come from " + person.local
+func getIntroduce(person Person) string {
+	return "this is " + person.name + "," + strconv.Itoa(person.age) + " years old. come from " + person.local
+}
+
+type man struct {
+	id   int
+	name string
+	city string
 }
 
 //数据库操作
-func operateDB(){
+func operateDB() {
 	//db 类型为sql.DB
 	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/mytest?charset=utf8")
-	if err!=nil {
+	if err != nil {
 		fmt.Println(err)
 	}
 	//preStmt, _ := db.Prepare("insert into test_tab(name,city) values (?,?)")
 	//preStmt.Exec("tr", "beijing")
 	//db.Exec("insert into test_tab(name,city) values (?,?)","tr", "beijing")
 
-	transaction,_ := db.Begin()
-	stmt,_ := transaction.Prepare("insert into test_tab(name,city) values (?,?)")
+	transaction, _ := db.Begin()
+	stmt, _ := transaction.Prepare("insert into test_tab(name,city) values (?,?)")
 	//id,_ := stmt.Exec("tr", "beijing")
 	stmt.Exec("yf", "衡水")
 	transaction.Commit()
 
 	fmt.Println("--------批量查询--------")
-	rows,_ := db.Query("select * from test_tab")
-	for rows.Next()  {
+	rows, _ := db.Query("select * from test_tab")
+	for rows.Next() {
 		var id int
-		var name,city string
-		if err := rows.Scan(&id, &name, &city);err==nil{
-			fmt.Println("id:",id," name:",name, " city:",city)
+		var name, city string
+		if err := rows.Scan(&id, &name, &city); err == nil {
+			fmt.Println("id:", id, " name:", name, " city:", city)
 		}
 	}
 
 	fmt.Println("--------单个查询--------")
 	var id int
-	var name,city string
-	db.QueryRow("select * from test_tab where id = 4").Scan(&id,&name,&city)
-	fmt.Println("id:",id," name:",name, " city:",city)
+	var name, city string
+	db.QueryRow("select * from test_tab where id = 4").Scan(&id, &name, &city)
+	//var record man
+	//db.QueryRow("select * from test_tab where id = 1").Scan(&record)
+	//fmt.Println(record)
 	db.Close()
-
 
 }
 
 type knowledge struct {
-	Id int
+	Id       int
+	UserId   int
 	Language string
-	Skill string
-	Level string
+	Skill    string
+	Level    string
 	Contents string
 }
 
-func operateGORM(){
+type joinResult struct {
+	//注意字段名必须大写，否则scan将赋值失败
+	Name  string
+	City  string
+	Skill string
+	Level string
+}
+
+func operateGORM() {
 	db, err := gorm.Open("mysql", "root:root@tcp(localhost:3306)/mytest?charset=utf8")
 	if err != nil {
 		panic("failed to connect database")
 	}
 	defer db.Close()
 
-	// Migrate the schema
-	db.AutoMigrate(&knowledge{})
+	//db.Table("tableName")用于指定表名；不指定时默认查询 "结构体名+s"
+	// Migrate the schema 建表
+	db.Table("test2").AutoMigrate(&knowledge{})
 
-	// Create
-	db.Create(&knowledge{Language: "go", Skill: "orm", Level: "begin"})
+	// Create 插入
+	//db.Table("test2").Create(&knowledge{Language: "go", Skill: "orm", Level: "init"})
+	//
+	//
+	//// Read
+	var record knowledge
+	//一条
+	db.Table("test2").First(&record, 1).Scan(&record) // find product with id 1
+	//
+	var records []knowledge
+	//多条
+	db.Table("test2").Where("user_id = ?", 1).Find(&records).Scan(&records)
 
-	// Read
-	var product knowledge
-	db.First(&product, 1) // find product with id 1
-	db.First(&product, "Language = ?", "go") // find product with code l1212
+	var records2 []joinResult
+	var records3 []joinResult
+	//连接
+	db.Table("test2").Select("test_tab.name name,test_tab.city city,test2.skill skill,test2.level level").
+		Joins("left join test_tab on test2.user_id=test_tab.id").Scan(&records2)
+	db.Table("test2").Select("test_tab.name name,test_tab.city city,test2.skill skill,test2.level level").
+		Joins("left join test_tab on test2.user_id=test_tab.id").Where("test2.user_id = ?", 1).
+		Scan(&records3)
+	db.Table("test2").First(&record, "Language = ?", "go") // find
 
-	// Update - update product's price to 2000
-	db.Model(&product).Update("begin", "init")
+	// Update
+	//db.Model(&record).Update("begin", "init")
 
-	// Delete - delete product
+	// Delete
 	//db.Delete(&product)
 }
