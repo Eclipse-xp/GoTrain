@@ -11,6 +11,10 @@ import (
 	"os"
 	"bufio"
 	"strings"
+	//下划线表示 只执行保重init函数 并不引入全部文件,mysql/driver中有如下初始化操作，
+	//func init() {
+	//	sql.Register("mysql", &MySQLDriver{})//注册驱动
+	//}
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"database/sql"
 	_ "github.com/jinzhu/gorm"
@@ -74,7 +78,6 @@ func (p *Person) showBlog() {
 	mux := http.NewServeMux()
 	rh := http.RedirectHandler("http://744722813.iteye.com/", 307)
 	mux.Handle("/blog", rh)
-
 	mux.Handle("/hello", timeHandler(time.RFC1123))
 	log.Println("Listening...")
 
@@ -83,9 +86,25 @@ func (p *Person) showBlog() {
 func timeHandler(format string) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		tm := time.Now().Format(format)
+		//如果要指定请求方式只能在这里 用 r.Method="get"...来判断吗？
 		w.Write([]byte("Hey ****" + r.FormValue("name") + "**** The time is: " + tm))
 	}
 	return http.HandlerFunc(fn)
+
+	//下面是接收json并反序列化的方式
+	//body, err := ioutil.ReadAll(r.Body)
+	//if err != nil {
+	//	fmt.Printf("read body err, %v\n", err)
+	//	return
+	//}
+	//println("json:", string(body))
+	//
+	//var a AutotaskRequest
+	//if err = json.Unmarshal(body, &a); err != nil {
+	//	fmt.Printf("Unmarshal err, %v\n", err)
+	//	return
+	//}
+	//fmt.Printf("%+v", a)
 }
 
 type Person struct {
