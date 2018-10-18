@@ -18,6 +18,7 @@ import (
 	_ "github.com/jinzhu/gorm"
 	"github.com/jinzhu/gorm"
 	"util"
+	_ "util"
 )
 
 var xp human.Person
@@ -26,7 +27,7 @@ var theCouple map[string]human.Person
 var language = "java"
 
 func main() {
-	util.RedisPut("redisGoStr", "hello rediogo")
+	util.RedisPut("redisGoStr", "hello rediogo 3")
 	//init_local()
 	//
 	//introduceAll(persons)
