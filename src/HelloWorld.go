@@ -1,24 +1,29 @@
 package main
+
 //需要把项目目录加到GOPATH中，才能引用到项目中的自定义包。GOPATH可以包括多个目录
 import (
 	"strconv"
 	//点 . 点操作的含义就是这个包导入之后在调用这个包的函数时，可以省略前缀的包名，
 	// 也就是前面你调用的Println(“hello world”)  可以省略的写成Println(“hello world”)
-	."fmt"
+	. "fmt"
+	"human"
+	"log"
 	"net/http"
 	"time"
-	"log"
-	"human"
+
 	//下划线表示 只执行包中init函数 并不引入全部文件,mysql/driver中有如下初始化操作，
 	//func init() {
 	//	sql.Register("mysql", &MySQLDriver{})//注册驱动
 	//}
-	_ "github.com/Go-SQL-Driver/MySQL"
 	"database/sql"
-	_ "github.com/jinzhu/gorm"
+	//"util"
+	//_ "util"
+
+	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/jinzhu/gorm"
-	"util"
-	_ "util"
+	_ "github.com/jinzhu/gorm"
+	//restful 框架
+	//"github.com/julienschmidt/httprouter"
 )
 
 var xp human.Person
@@ -27,7 +32,7 @@ var theCouple map[string]human.Person
 var language = "java"
 
 func main() {
-	util.RedisPut("redisGoStr", "hello rediogo 3")
+	// util.RedisPut("redisGoStr", "hello rediogo 3")
 	//init_local()
 	//
 	//introduceAll(persons)
@@ -62,18 +67,38 @@ func main() {
 	//
 	//operateDB()
 
-	//c := make(chan int, 2)
-	//c <- 1
-	//c <- 2
-	//Println(<-c)
-	//Println(<-c)
+	c := make(chan int, 2)
+	c <- 1
+	c <- 2
+	Println(<-c)
+	Println(<-c)
+	//close(c) 关闭channel
+	// select 语句使得一个 goroutine 在多个通讯操作上等待。
+	//select 会阻塞，直到条件分支中的某个可以继续执行，这时就会执行那个条件分支。当多个都准备好的时候，会随机选择一个
+	//当 select 中的其他条件分支都没有准备好的时候，`default` 分支会被执行。
+	//为了非阻塞的发送或者接收，可使用 default 分支
+	//for {
+	//	select {
+	//	case v := <-c:
+	//		fmt.Println("c,%v", v)
+	//		return
+	//	case v := <-quit:
+	//		fmt.Println("quit,%v", v)
+	//		return
+	//	case <- time.After(5 * time.Second): //设置超时
+	//	default:、
+	//		fmt.Println("    .")
+	//		time.Sleep(50 * time.Millisecond)
+	//	}
+	//}
 
-	//operateGORM()
+		//operateGORM()
 	//operateDB()
 }
 
 //____________本应放在其他文件的内容，由于编译问题暂放这里________________
 type hperson human.Person
+
 //开放博客
 func (p *hperson) showBlog() {
 	mux := http.NewServeMux()
