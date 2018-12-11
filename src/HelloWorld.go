@@ -22,8 +22,8 @@ import (
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm"
-	//restful 框架
-	//"github.com/julienschmidt/httprouter"
+
+	"os/exec"
 )
 
 var xp human.Person
@@ -67,11 +67,11 @@ func main() {
 	//
 	//operateDB()
 
-	c := make(chan int, 2)
-	c <- 1
-	c <- 2
-	Println(<-c)
-	Println(<-c)
+	//c := make(chan int, 2)
+	//c <- 1
+	//c <- 2
+	//Println(<-c)
+	//Println(<-c)
 	//close(c) 关闭channel
 	// select 语句使得一个 goroutine 在多个通讯操作上等待。
 	//select 会阻塞，直到条件分支中的某个可以继续执行，这时就会执行那个条件分支。当多个都准备好的时候，会随机选择一个
@@ -92,8 +92,45 @@ func main() {
 	//	}
 	//}
 
-		//operateGORM()
+	//operateGORM()
 	//operateDB()
+	//a()
+	//a()
+	//execCommand("/usr/local/bin/docker-compose -f /data/datanode/compose/bundle/docker-compose.yml pull")
+	//execCommand("docker-compose")
+	execCommand("docker")
+}
+func execCommand(cmdLine string) {
+	//outputs, err := exec.Command(cmdLine, "-f", "/data/datanode/compose/bundle/docker-compose.yml", "pull").CombinedOutput()
+	outputs, err := exec.Command(cmdLine, "ps").CombinedOutput()
+	if err != nil {
+		println(err.Error())
+	}
+	println(string(outputs))
+	//cmd := exec.Command(cmdLine, "-f", "/data/datanode/compose/bundle/docker-compose.yml", "pull")
+	//var out bytes.Buffer
+	//cmd.Stdout = &out
+	//
+	//println(out.String())
+	//err2 := cmd.Run()
+	//if err2 != nil {
+	//	log.Fatal(err2)
+	//}
+}
+
+func a() {
+	mymap := map[string]string{"key": "value"}
+	kobe := &human.Person{Name: "kobe", Age: 22}
+	i := 0
+	i += 1
+	//defer 入栈，
+	defer Println(i)
+	defer Println(mymap["key"])
+	defer Println(kobe.Age)
+	*kobe = human.Person{Name: "kobe", Age: 15}
+	mymap["key"] = "value2"
+	i++
+	return
 }
 
 //____________本应放在其他文件的内容，由于编译问题暂放这里________________

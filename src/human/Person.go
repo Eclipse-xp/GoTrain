@@ -2,13 +2,13 @@
 package human
 
 import (
-	"log"
-	"os"
 	"bufio"
+	"errors"
 	"fmt"
 	"food"
+	"log"
+	"os"
 	"strings"
-	"errors"
 )
 
 type Person struct {
@@ -83,7 +83,7 @@ func (p *Person) Cook() food.Food {
 //恋爱
 func (p *Person) FallInLoveWith(who *Person) {
 	if p.Sex == who.Sex {
-		panic("对不起，我" + p.Name + "是直的！", )
+		panic("对不起，我" + p.Name + "是直的！")
 	}
 	fmt.Println(p.Name, " love ", who.Name)
 }

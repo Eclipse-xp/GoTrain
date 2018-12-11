@@ -1,14 +1,15 @@
 package util
 
 import (
-	"github.com/gomodule/redigo/redis"
 	"fmt"
-	"time"
+	"github.com/gomodule/redigo/redis"
 	"sync"
+	"time"
 )
 
 var redisPool *redis.Pool
 var mu sync.Mutex
+
 func init() {
 	if redisPool == nil {
 		mu.Lock()
